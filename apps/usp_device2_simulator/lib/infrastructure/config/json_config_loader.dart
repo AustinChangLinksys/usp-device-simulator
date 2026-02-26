@@ -20,20 +20,20 @@ class JsonConfigLoader implements IConfigLoader {
     final jsonString = await file.readAsString();
     final jsonMap = jsonDecode(jsonString) as Map<String, dynamic>;
 
-    // We will "evolve" this tree through updates
     DeviceTree currentTree = initialTree;
     final pathResolver = PathResolver();
+    final skipped = <String>[];
 
     for (final entry in jsonMap.entries) {
       final pathStr = entry.key;
       final jsonValue = entry.value;
       final path = UspPath.parse(pathStr);
 
-      // 1. Find the target node in the current tree (to get its expected type)
       final nodes = pathResolver.resolve<UspNode>(currentTree.root, path);
-      
+
       if (nodes.isEmpty) {
-        throw UspException(7002, 'Path not found in DeviceTree: $pathStr');
+        skipped.add('$pathStr (not in schema)');
+        continue;
       }
 
       for (final node in nodes) {
@@ -42,21 +42,25 @@ class JsonConfigLoader implements IConfigLoader {
           UspValue newUspValue;
 
           try {
-            // Helper: Convert JSON value to UspValue
             newUspValue = _convertJsonValueToUspValue(jsonValue, expectedType);
           } catch (e) {
-            throw UspException(7003, 'Invalid value for $pathStr: $e');
+            skipped.add('$pathStr (${e is UspException ? e.message : e})');
+            continue;
           }
 
-          // 2. Create an updated Parameter instance (Copy-on-Write)
           final newParam = node.copyWith(value: newUspValue);
-          
-          // 3. Directly call DeviceTree.updateNode
-          // DeviceTree will handle the immutable tree structure replacement
           currentTree = currentTree.updateNode(newParam);
         }
       }
     }
+
+    if (skipped.isNotEmpty) {
+      print('   ⚠️ Skipped ${skipped.length} config entries:');
+      for (final s in skipped) {
+        print('      - $s');
+      }
+    }
+
     return currentTree;
   }
 
@@ -82,19 +86,19 @@ class JsonConfigLoader implements IConfigLoader {
 
         case UspValueType.int:
         case UspValueType.unsignedInt:
+        case UspValueType.long:
+        case UspValueType.unsignedLong:
           return UspValue<int>(int.parse(jsonValue), targetType);
 
         case UspValueType.boolean:
-          if (jsonValue.toLowerCase() == 'true') {
+          final lower = jsonValue.toLowerCase();
+          if (lower == 'true' || lower == '1') {
             return UspValue<bool>(true, UspValueType.boolean);
           }
-          if (jsonValue.toLowerCase() == 'false') {
+          if (lower == 'false' || lower == '0') {
             return UspValue<bool>(false, UspValueType.boolean);
           }
           throw UspException(7003, "Invalid boolean string: '$jsonValue'");
-
-        default:
-          throw UspException(7003, "Cannot convert String to $targetType");
       }
     } else if (jsonValue is int) {
       if ([
