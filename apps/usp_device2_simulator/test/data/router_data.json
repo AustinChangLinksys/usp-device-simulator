@@ -1,0 +1,42 @@
+{
+  "Device.DeviceInfo.Manufacturer": "DartSim Networks",
+  "Device.DeviceInfo.ModelName": "Tri-Band-Gateway-X7",
+  "Device.DeviceInfo.SerialNumber": "TW-HUKOU-2025-888",
+  "Device.DeviceInfo.SoftwareVersion": "3.0.1-stable",
+  "Device.Time.LocalTimeZone": "Asia/Taipei",
+
+  "Device.IP.Interface.1.Name": "wan0",
+  "Device.IP.Interface.1.Type": "Ethernet",
+  "Device.IP.Interface.1.Enable": true,
+  "Device.IP.Interface.1.Status": "Up",
+  "Device.IP.Interface.1.IPv4Address.1.IPAddress": "59.127.0.100",
+  "Device.IP.Interface.1.IPv4Address.1.SubnetMask": "255.255.255.0",
+
+  "Device.IP.Interface.2.Name": "br-lan",
+  "Device.IP.Interface.2.Type": "Ethernet",
+  "Device.IP.Interface.2.Enable": true,
+  "Device.IP.Interface.2.Status": "Up",
+  "Device.IP.Interface.2.IPv4Address.1.IPAddress": "192.168.1.1",
+  "Device.IP.Interface.2.IPv4Address.1.SubnetMask": "255.255.255.0",
+
+  "Device.WiFi.Radio.1.OperatingFrequencyBand": "2.4GHz",
+  "Device.WiFi.Radio.1.Channel": 6,
+  "Device.WiFi.Radio.2.OperatingFrequencyBand": "5GHz",
+  "Device.WiFi.Radio.2.Channel": 149,
+  "Device.WiFi.Radio.3.OperatingFrequencyBand": "6GHz",
+  "Device.WiFi.Radio.3.Channel": 37,
+
+  "Device.WiFi.SSID.1.SSID": "DartSim_Home_2.4G",
+  "Device.WiFi.SSID.1.MACAddress": "AA:BB:CC:DD:EE:01",
+  "Device.WiFi.SSID.2.SSID": "DartSim_Home_5G",
+  "Device.WiFi.SSID.2.MACAddress": "AA:BB:CC:DD:EE:02",
+  "Device.WiFi.SSID.3.SSID": "DartSim_Pro_6G",
+  "Device.WiFi.SSID.3.MACAddress": "AA:BB:CC:DD:EE:03",
+
+  "Device.WiFi.AccessPoint.1.Security.ModeEnabled": "WPA2-Personal",
+  "Device.WiFi.AccessPoint.1.Security.KeyPassphrase": "password123",
+  "Device.WiFi.AccessPoint.2.Security.ModeEnabled": "WPA3-Personal",
+  "Device.WiFi.AccessPoint.2.Security.KeyPassphrase": "secure_password_5g",
+  "Device.WiFi.AccessPoint.3.Security.ModeEnabled": "WPA3-Personal",
+  "Device.WiFi.AccessPoint.3.Security.KeyPassphrase": "ultra_secure_6g"
+}

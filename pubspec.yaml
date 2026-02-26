@@ -1,0 +1,9 @@
+name: usp_device_simulator
+description: USP Device Simulator - TR-369 compliant device simulator with gRPC, WebSocket, HTTP and MQTT transport
+publish_to: 'none'
+
+environment:
+  sdk: ^3.5.0
+
+dev_dependencies:
+  melos: ^6.3.1

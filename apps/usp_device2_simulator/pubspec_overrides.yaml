@@ -1,0 +1,4 @@
+# melos_managed_dependency_overrides: usp_protocol_common
+dependency_overrides:
+  usp_protocol_common:
+    path: ../../packages/usp_protocol_common

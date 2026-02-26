@@ -1,0 +1,77 @@
+name: usp_device_simulator
+
+packages:
+  - apps/*
+  - packages/*
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  # --- Infrastructure (Docker) ---
+  infra:start:
+    run: docker compose -f infrastructure/docker-compose.yaml up --build -d
+    description: Start the full infrastructure (Simulator + Broker) in background.
+
+  infra:stop:
+    run: docker compose -f infrastructure/docker-compose.yaml down
+    description: Stop all infrastructure containers.
+
+  infra:restart:
+    run: docker compose -f infrastructure/docker-compose.yaml restart
+    description: Restart infrastructure containers.
+
+  infra:logs:
+    run: docker compose -f infrastructure/docker-compose.yaml logs -f
+    description: Follow logs from infrastructure containers.
+
+  infra:logs:tail:
+    run: docker compose -f infrastructure/docker-compose.yaml logs -f
+    description: Follow logs from infrastructure containers.
+
+  # --- Verification Tools (Client Scripts) ---
+
+  # test gRPC channel
+  verify:grpc:
+    exec: dart run bin/verify_transport_grpc.dart
+    packageFilters:
+      scope: usp_device2_simulator
+    description: Run the gRPC verification script (Simulates a Client App).
+
+  # test WebSocket channel
+  verify:ws:
+    exec: dart run bin/verify_transport_ws.dart
+    packageFilters:
+      scope: usp_device2_simulator
+    description: Run the WebSocket verification script.
+
+  # test MQTT channel
+  verify:mqtt:
+    exec: dart run bin/verify_transport_mqtt.dart
+    packageFilters:
+      scope: usp_device2_simulator
+    description: Run the MQTT lifecycle verification script.
+
+  # --- Simulator Tools ---
+
+  # run simulator locally
+  sim:run:
+    exec: dart run bin/server.dart --mtp=all
+    packageFilters:
+      scope: usp_device2_simulator
+    description: Run the USP Device Simulator locally (requires local or dockerized broker).
+
+  # --- Development Tools ---
+
+  # regenerate Protobuf (in common)
+  proto:gen:
+    exec: protoc --dart_out=grpc:lib/src/generated -Iprotos protos/*.proto
+    packageFilters:
+      scope: usp_protocol_common
+    description: Regenerate Protobuf Dart code in common package.
+
+  # run all tests in all packages
+  test:all:
+    run: melos exec -- "flutter test"
+    description: Run all tests in all packages.

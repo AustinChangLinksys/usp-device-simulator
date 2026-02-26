@@ -1,0 +1,20 @@
+<document>
+  <model name="urn:broadband-forum-org:tr-181-2-20-0" spec="urn:broadband-forum-org:tr-106-1-2" isAbstract="false">
+    <object name="Device." access="readOnly" minEntries="1" maxEntries="1">
+      <object name="Device.Test." access="readOnly" minEntries="1" maxEntries="1">
+        <command name="MyCommand()" commandType="asynchronous">
+          <input>
+            <parameter name="InArg1">
+              <syntax><string/></syntax>
+            </parameter>
+          </input>
+          <output>
+            <parameter name="OutArg1">
+              <syntax><unsignedInt/></syntax>
+            </parameter>
+          </output>
+        </command>
+      </object>
+    </object>
+  </model>
+</document>

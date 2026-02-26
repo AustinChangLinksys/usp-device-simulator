@@ -1,0 +1,26 @@
+name: usp_device2_simulator
+description: "A new Flutter package project."
+version: 0.0.1
+publish_to: 'none'
+homepage:
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  xml: ^6.1.0 
+  json_serializable: ^6.8.0 
+  collection: ^1.18.0 
+  json_annotation: ^4.9.0 
+  grpc: ^5.0.0
+  usp_protocol_common:
+    path: ../../packages/usp_protocol_common
+  mqtt_client: ^10.8.0
+  typed_data: ^1.4.0
+  args: ^2.7.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0
+  build_runner: ^2.4.9 
+  mocktail: ^1.0.4

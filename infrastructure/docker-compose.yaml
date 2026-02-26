@@ -1,0 +1,48 @@
+services:
+  simulator:
+    build:
+      context: ../
+      dockerfile: apps/usp_device2_simulator/Dockerfile
+    ports:
+      - "50051:50051" # gRPC Gateway
+      - "8080:8080" # WebSocket MTP
+      - "8081:8081" # HTTP MTP
+    command:
+      [
+        "/app/bin/server",
+        "--mtp",
+        "all",
+        "--port",
+        "8080",
+        "--grpc-port",
+        "50051",
+        "--broker",
+        "mosquitto",
+      ]
+    environment:
+      - MQTT_BROKER_HOST=mosquitto
+    depends_on:
+      - mosquitto
+    networks:
+      - usp-net
+
+  mosquitto:
+    image: eclipse-mosquitto
+    container_name: usp-broker
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    networks:
+      - usp-net
+
+networks:
+  usp-net:
+    driver: bridge
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:

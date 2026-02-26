@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dm:document xmlns:dm="urn:broadband-forum-org:cwmp:datamodel-1-8"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             spec="urn:broadband-forum-org:tr-181-2-16-0">
+
+  <model name="Device:2.16">
+    <object name="Device." access="readOnly" minEntries="1" maxEntries="1"/>
+
+    <object name="Device.DeviceInfo." access="readOnly" minEntries="1" maxEntries="1">
+      <parameter name="Manufacturer" access="readOnly">
+        <syntax><string><size maxLength="64"/></string></syntax>
+      </parameter>
+      <parameter name="ModelName" access="readOnly">
+        <syntax><string><size maxLength="64"/></string></syntax>
+      </parameter>
+      <parameter name="SoftwareVersion" access="readOnly">
+        <syntax><string><size maxLength="64"/></string></syntax>
+      </parameter>
+      <parameter name="SerialNumber" access="readOnly">
+        <syntax><string><size maxLength="64"/></string></syntax>
+      </parameter>
+      <parameter name="UpTime" access="readOnly">
+        <syntax><unsignedInt/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.Time." access="readOnly" minEntries="1" maxEntries="1">
+      <parameter name="Enable" access="readWrite">
+        <syntax><boolean/></syntax>
+      </parameter>
+      <parameter name="Status" access="readOnly">
+        <syntax><string/></syntax>
+      </parameter>
+      <parameter name="LocalTimeZone" access="readWrite">
+        <syntax><string><size maxLength="256"/></string></syntax>
+      </parameter>
+      <parameter name="CurrentLocalTime" access="readOnly">
+        <syntax><dateTime/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.IP." access="readOnly" minEntries="1" maxEntries="1"/>
+
+    <object name="Device.IP.Interface." access="readOnly" minEntries="0" maxEntries="1"/>
+    
+    <object name="Device.IP.Interface.{i}." access="readWrite" minEntries="0" maxEntries="unbounded">
+      <parameter name="Enable" access="readWrite">
+        <syntax><boolean/></syntax>
+      </parameter>
+      <parameter name="Status" access="readOnly">
+        <syntax><string/></syntax>
+      </parameter>
+      <parameter name="Name" access="readOnly">
+        <syntax><string><size maxLength="64"/></string></syntax>
+      </parameter>
+      <parameter name="Type" access="readOnly">
+        <syntax><string/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.IP.Interface.{i}.IPv4Address." access="readOnly" minEntries="0" maxEntries="1"/>
+    
+    <object name="Device.IP.Interface.{i}.IPv4Address.{i}." access="readWrite" minEntries="0" maxEntries="unbounded">
+      <parameter name="IPAddress" access="readWrite">
+        <syntax><string/></syntax>
+      </parameter>
+      <parameter name="SubnetMask" access="readWrite">
+        <syntax><string/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.WiFi." access="readOnly" minEntries="1" maxEntries="1"/>
+
+    <object name="Device.WiFi.Radio." access="readOnly" minEntries="0" maxEntries="1"/>
+    <object name="Device.WiFi.Radio.{i}." access="readWrite" minEntries="0" maxEntries="unbounded">
+      <parameter name="Enable" access="readWrite">
+        <syntax><boolean/></syntax>
+      </parameter>
+      <parameter name="OperatingFrequencyBand" access="readOnly">
+        <syntax>
+            <string>
+                <enumeration value="2.4GHz"/>
+                <enumeration value="5GHz"/>
+                <enumeration value="6GHz"/>
+            </string>
+        </syntax>
+      </parameter>
+      <parameter name="Channel" access="readWrite">
+         <syntax><unsignedInt/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.WiFi.SSID." access="readOnly" minEntries="0" maxEntries="1"/>
+    <object name="Device.WiFi.SSID.{i}." access="readWrite" minEntries="0" maxEntries="unbounded">
+      <parameter name="Enable" access="readWrite">
+        <syntax><boolean/></syntax>
+      </parameter>
+      <parameter name="SSID" access="readWrite">
+        <syntax><string><size maxLength="32"/></string></syntax>
+      </parameter>
+      <parameter name="MACAddress" access="readOnly">
+        <syntax><string/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.WiFi.AccessPoint." access="readOnly" minEntries="0" maxEntries="1"/>
+    <object name="Device.WiFi.AccessPoint.{i}." access="readWrite" minEntries="0" maxEntries="unbounded">
+      <parameter name="Enable" access="readWrite">
+        <syntax><boolean/></syntax>
+      </parameter>
+      <parameter name="SSIDReference" access="readWrite">
+        <syntax><string/></syntax>
+      </parameter>
+    </object>
+
+    <object name="Device.WiFi.AccessPoint.{i}.Security." access="readOnly" minEntries="1" maxEntries="1">
+        <parameter name="ModeEnabled" access="readWrite">
+            <syntax><string/></syntax>
+        </parameter>
+        <parameter name="KeyPassphrase" access="readWrite">
+            <syntax><string/></syntax>
+        </parameter>
+    </object>
+
+  </model>
+</dm:document>

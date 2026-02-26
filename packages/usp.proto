@@ -1,0 +1,361 @@
+// USP Protocol Buffers Definition
+// Based on TR-369 (User Services Platform) specification
+// https://usp.technology/specification/
+
+syntax = "proto3";
+
+package usp;
+
+// Main USP Record - encapsulates all USP messages
+message Record {
+  string version = 1;
+  string to_id = 2;
+  string from_id = 3;
+
+  oneof record_type {
+    NoSessionContextRecord no_session_context = 4;
+    SessionContextRecord session_context = 5;
+  }
+}
+
+message NoSessionContextRecord {
+  bytes payload = 1;
+}
+
+message SessionContextRecord {
+  uint64 session_id = 1;
+  uint64 sequence_id = 2;
+  uint64 expected_id = 3;
+  uint64 retransmit_id = 4;
+
+  oneof payload {
+    bytes payload_security = 5;
+    bytes payload_no_security = 6;
+  }
+}
+
+// Main USP Message
+message Msg {
+  Header header = 1;
+  Body body = 2;
+}
+
+message Header {
+  string msg_id = 1;
+  enum MsgType {
+    ERROR = 0;
+    GET = 1;
+    GET_RESP = 2;
+    NOTIFY = 3;
+    SET = 4;
+    SET_RESP = 5;
+    OPERATE = 6;
+    OPERATE_RESP = 7;
+    ADD = 8;
+    ADD_RESP = 9;
+    DELETE = 10;
+    DELETE_RESP = 11;
+    GET_SUPPORTED_DM = 12;
+    GET_SUPPORTED_DM_RESP = 13;
+    GET_INSTANCES = 14;
+    GET_INSTANCES_RESP = 15;
+    NOTIFY_RESP = 16;
+    GET_SUPPORTED_PROTO = 17;
+    GET_SUPPORTED_PROTO_RESP = 18;
+  }
+  MsgType msg_type = 2;
+}
+
+message Body {
+  oneof msg_body {
+    Request request = 1;
+    Response response = 2;
+    Error error = 3;
+  }
+}
+
+message Request {
+  oneof req_type {
+    Get get = 1;
+    GetSupportedDM get_supported_dm = 2;
+    GetInstances get_instances = 3;
+    Set set = 4;
+    Add add = 5;
+    Delete delete = 6;
+    Operate operate = 7;
+    Notify notify = 8;
+    GetSupportedProtocol get_supported_protocol = 9;
+  }
+}
+
+message Response {
+  oneof resp_type {
+    GetResp get_resp = 1;
+    GetSupportedDMResp get_supported_dm_resp = 2;
+    GetInstancesResp get_instances_resp = 3;
+    SetResp set_resp = 4;
+    AddResp add_resp = 5;
+    DeleteResp delete_resp = 6;
+    OperateResp operate_resp = 7;
+    NotifyResp notify_resp = 8;
+    GetSupportedProtocolResp get_supported_protocol_resp = 9;
+  }
+}
+
+// Get Request and Response
+message Get {
+  repeated string param_paths = 1;
+  uint32 max_depth = 2;
+}
+
+message GetResp {
+  repeated RequestedPathResult req_path_results = 1;
+}
+
+message RequestedPathResult {
+  string requested_path = 1;
+  fixed32 err_code = 2;  // obuspa uses fixed32
+  string err_msg = 3;
+  repeated ResolvedPathResult resolved_path_results = 4;
+}
+
+message ResolvedPathResult {
+  string resolved_path = 1;
+  map<string, string> result_params = 2;
+}
+
+// Set Request and Response
+message Set {
+  bool allow_partial = 1;
+  repeated UpdateObject update_objs = 2;
+}
+
+message UpdateObject {
+  string obj_path = 1;
+  map<string, string> param_settings = 2;
+}
+
+message SetResp {
+  repeated UpdatedObjectResult updated_obj_results = 1;
+}
+
+message UpdatedObjectResult {
+  string requested_path = 1;
+  oneof oper_status {
+    OperationSuccess oper_success = 2;
+    OperationFailure oper_failure = 3;
+  }
+}
+
+message OperationSuccess {
+  repeated UpdatedInstanceResult updated_inst_results = 1;
+}
+
+message UpdatedInstanceResult {
+  string affected_path = 1;
+  map<string, string> updated_params = 2;
+}
+
+message OperationFailure {
+  fixed32 err_code = 1;  // obuspa uses fixed32
+  string err_msg = 2;
+}
+
+// Add Request and Response
+message Add {
+  bool allow_partial = 1;
+  repeated CreateObject create_objs = 2;
+}
+
+message CreateObject {
+  string obj_path = 1;
+  map<string, string> param_settings = 2;
+}
+
+message AddResp {
+  repeated CreatedObjectResult created_obj_results = 1;
+}
+
+message CreatedObjectResult {
+  string requested_path = 1;
+  oneof oper_status {
+    OperationSuccess oper_success = 2;
+    OperationFailure oper_failure = 3;
+  }
+}
+
+// Delete Request and Response
+message Delete {
+  bool allow_partial = 1;
+  repeated string obj_paths = 2;
+}
+
+message DeleteResp {
+  repeated DeletedObjectResult deleted_obj_results = 1;
+}
+
+message DeletedObjectResult {
+  string requested_path = 1;
+  oneof oper_status {
+    OperationSuccess oper_success = 2;
+    OperationFailure oper_failure = 3;
+  }
+}
+
+// Operate Request and Response
+message Operate {
+  string command = 1;
+  string command_key = 2;
+  bool send_resp = 3;
+  map<string, string> input_args = 4;
+}
+
+message OperateResp {
+  string command = 1;
+  oneof operate_resp {
+    OperationSuccess oper_success = 2;
+    OperationFailure oper_failure = 3;
+  }
+}
+
+// Notify and NotifyResp
+message Notify {
+  string subscription_id = 1;
+  bool send_resp = 2;
+  oneof notification {
+    Event event = 3;
+    ValueChange value_change = 4;
+    ObjectCreation obj_creation = 5;
+    ObjectDeletion obj_deletion = 6;
+    OperComplete oper_complete = 7;
+    OnBoardRequest on_board_req = 8;
+  }
+}
+
+message Event {
+  string obj_path = 1;
+  string event_name = 2;
+  map<string, string> params = 3;
+}
+
+message ValueChange {
+  string param_path = 1;
+  string param_value = 2;
+}
+
+message ObjectCreation {
+  string obj_path = 1;
+  map<string, string> unique_keys = 2;
+}
+
+message ObjectDeletion {
+  string obj_path = 1;
+}
+
+message OperComplete {
+  string command = 1;
+  string command_key = 2;
+  oneof operation_resp {
+    OperationSuccess oper_success = 3;
+    OperationFailure oper_failure = 4;
+  }
+}
+
+message OnBoardRequest {
+  string oui = 1;
+  string product_class = 2;
+  string serial_number = 3;
+  string agent_supported_protocol_versions = 4;
+}
+
+message NotifyResp {
+  string subscription_id = 1;
+}
+
+// GetSupportedDM
+message GetSupportedDM {
+  repeated string obj_paths = 1;
+  bool first_level_only = 2;
+  bool return_commands = 3;
+  bool return_events = 4;
+  bool return_params = 5;
+}
+
+message GetSupportedDMResp {
+  repeated RequestedObjectResult req_obj_results = 1;
+}
+
+message RequestedObjectResult {
+  string req_obj_path = 1;
+  fixed32 err_code = 2;  // obuspa uses fixed32
+  string err_msg = 3;
+  repeated SupportedObjectResult supported_objs = 4;
+}
+
+message SupportedObjectResult {
+  string supported_obj_path = 1;
+  enum AccessType {
+    OBJ_READ_ONLY = 0;
+    OBJ_ADD_DELETE = 1;
+    OBJ_ADD_ONLY = 2;
+    OBJ_DELETE_ONLY = 3;
+  }
+  AccessType access = 2;
+  bool is_multi_instance = 3;
+  repeated SupportedParamResult supported_params = 4;
+  repeated SupportedCommandResult supported_commands = 5;
+  repeated SupportedEventResult supported_events = 6;
+}
+
+message SupportedParamResult {
+  string param_name = 1;
+  enum AccessType {
+    PARAM_READ_ONLY = 0;
+    PARAM_READ_WRITE = 1;
+    PARAM_WRITE_ONLY = 2;
+  }
+  AccessType access = 2;
+}
+
+message SupportedCommandResult {
+  string command_name = 1;
+  repeated string input_arg_names = 2;
+  repeated string output_arg_names = 3;
+}
+
+message SupportedEventResult {
+  string event_name = 1;
+  repeated string arg_names = 2;
+}
+
+// GetInstances
+message GetInstances {
+  repeated string obj_paths = 1;
+  bool first_level_only = 2;
+}
+
+message GetInstancesResp {
+  repeated RequestedPathResult req_path_results = 1;
+}
+
+// GetSupportedProtocol
+message GetSupportedProtocol {
+  string controller_supported_protocol_versions = 1;
+}
+
+message GetSupportedProtocolResp {
+  string agent_supported_protocol_versions = 1;
+}
+
+// Error
+message Error {
+  fixed32 err_code = 1;  // obuspa uses fixed32
+  string err_msg = 2;
+  repeated ParamError param_errs = 3;
+}
+
+message ParamError {
+  string param_path = 1;
+  fixed32 err_code = 2;  // obuspa uses fixed32
+  string err_msg = 3;
+}
